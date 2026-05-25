@@ -101,6 +101,15 @@ function Post() {
             <span className="inline-flex items-center gap-1.5"><User className="h-4 w-4" />Mohit Sharma</span>
             <span className="inline-flex items-center gap-1.5"><Calendar className="h-4 w-4" />{post.date}</span>
           </div>
+          {post.image && (
+            <div className="mb-8 overflow-hidden rounded-2xl border border-border aspect-[21/9]">
+              <img 
+                src={post.image} 
+                alt={post.title} 
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
           <div className="space-y-5 text-lg leading-relaxed text-foreground/85">
             {body.map((p, i) => <p key={i}>{p}</p>)}
           </div>

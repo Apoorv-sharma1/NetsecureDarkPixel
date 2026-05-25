@@ -12,13 +12,13 @@ export function PageHero({
   return (
     <section className="gradient-hero relative overflow-hidden text-primary-foreground">
       <div className="absolute inset-0 grid-fade" aria-hidden />
-      <div className="container-prose relative py-20 md:py-28">
+      <div className="page-hero-copy container-prose relative py-20 md:py-28">
         {eyebrow && (
           <div className="mb-4 inline-flex items-center rounded-full border border-teal/40 bg-teal/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal">
             {eyebrow}
           </div>
         )}
-        <h1 className="max-w-3xl text-balance text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+        <h1 className="hero-title max-w-3xl text-balance text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
           {title}
         </h1>
         {subtitle && (
@@ -61,7 +61,9 @@ export function SectionHeading({
   return (
     <div className={`mb-12 max-w-3xl ${center ? "mx-auto text-center" : ""}`}>
       {eyebrow && (
-        <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-teal">{eyebrow}</div>
+        <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-teal">
+          {eyebrow}
+        </div>
       )}
       <h2 className="text-balance text-3xl font-bold text-foreground md:text-4xl">{title}</h2>
       {subtitle && <p className="mt-4 text-base text-muted-foreground md:text-lg">{subtitle}</p>}
@@ -95,7 +97,12 @@ export function CTAButton({
 
   if (href) {
     return (
-      <a href={href} className={cls} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined}>
+      <a
+        href={href}
+        className={cls}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noreferrer" : undefined}
+      >
         {children}
       </a>
     );

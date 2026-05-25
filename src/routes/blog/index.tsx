@@ -19,11 +19,46 @@ export const Route = createFileRoute("/blog/")({
 });
 
 export const POSTS = [
-  { slug: "upi-fraud-rajasthan-2026", title: "5 types of UPI fraud every Rajasthan resident must know in 2026", excerpt: "From QR-code scams to fake refund calls — the five UPI fraud patterns hitting Rajasthan hardest, and how to defend against them.", category: "Fraud Alerts", date: "May 2026" },
-  { slug: "cyberstalking-report-india", title: "What is cyberstalking and how to report it in India", excerpt: "A practical guide to recognising cyberstalking, documenting evidence, and reporting it via the 1930 helpline and cybercrime.gov.in.", category: "Women's Safety", date: "Apr 2026" },
-  { slug: "school-cyber-safety-guide", title: "How to protect your school from cyber fraud — a guide for parents and teachers", excerpt: "A field-tested checklist for educators and parents to harden student safety online — from social media to school WhatsApp groups.", category: "Student Safety", date: "Apr 2026" },
-  { slug: "dpdp-act-2023-ngos", title: "What is the DPDP Act 2023 and why every NGO must know it", excerpt: "India's Digital Personal Data Protection Act explained for NGO leaders — obligations, penalties, and a 5-step compliance starter plan.", category: "Digital Literacy", date: "Mar 2026" },
-  { slug: "phishing-emails-7-signs", title: "Phishing emails: 7 warning signs every Indian professional must know", excerpt: "Seven concrete tell-tale signs that an email is phishing — with real Indian examples and a copy-paste checklist for your team.", category: "Cyber Safety Tips", date: "Mar 2026" },
+  { 
+    slug: "upi-fraud-rajasthan-2026", 
+    title: "5 types of UPI fraud every Rajasthan resident must know in 2026", 
+    excerpt: "From QR-code scams to fake refund calls — the five UPI fraud patterns hitting Rajasthan hardest, and how to defend against them.", 
+    category: "Fraud Alerts", 
+    date: "May 2026",
+    image: "https://images.unsplash.com/photo-1616077168079-7e09a677fb2c?q=80&w=1200&auto=format&fit=crop"
+  },
+  { 
+    slug: "cyberstalking-report-india", 
+    title: "What is cyberstalking and how to report it in India", 
+    excerpt: "A practical guide to recognising cyberstalking, documenting evidence, and reporting it via the 1930 helpline and cybercrime.gov.in.", 
+    category: "Women's Safety", 
+    date: "Apr 2026",
+    image: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1200&auto=format&fit=crop"
+  },
+  { 
+    slug: "school-cyber-safety-guide", 
+    title: "How to protect your school from cyber fraud — a guide for parents and teachers", 
+    excerpt: "A field-tested checklist for educators and parents to harden student safety online — from social media to school WhatsApp groups.", 
+    category: "Student Safety", 
+    date: "Apr 2026",
+    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1200&auto=format&fit=crop"
+  },
+  { 
+    slug: "dpdp-act-2023-ngos", 
+    title: "What is the DPDP Act 2023 and why every NGO must know it", 
+    excerpt: "India's Digital Personal Data Protection Act explained for NGO leaders — obligations, penalties, and a 5-step compliance starter plan.", 
+    category: "Digital Literacy", 
+    date: "Mar 2026",
+    image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?q=80&w=1200&auto=format&fit=crop"
+  },
+  { 
+    slug: "phishing-emails-7-signs", 
+    title: "Phishing emails: 7 warning signs every Indian professional must know", 
+    excerpt: "Seven concrete tell-tale signs that an email is phishing — with real Indian examples and a copy-paste checklist for your team.", 
+    category: "Cyber Safety Tips", 
+    date: "Mar 2026",
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=1200&auto=format&fit=crop"
+  },
 ];
 
 const CATEGORIES = ["All", "Fraud Alerts", "Cyber Safety Tips", "Women's Safety", "Student Safety", "Digital Literacy"];
@@ -49,8 +84,14 @@ function Blog() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((p) => (
             <Link key={p.slug} to="/blog/$slug" params={{ slug: p.slug }} className="group overflow-hidden rounded-2xl border border-border bg-card shadow-card transition hover:-translate-y-1 hover:shadow-card-hover">
-              <div className="aspect-[16/10] bg-gradient-to-br from-primary via-primary/80 to-teal/40 relative">
-                <div className="absolute inset-0 grid-fade opacity-40" aria-hidden />
+              <div className="aspect-[16/10] bg-gradient-to-br from-primary via-primary/80 to-teal/40 relative overflow-hidden">
+                <img 
+                  src={p.image} 
+                  alt={p.title} 
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
+                <div className="absolute inset-0 grid-fade opacity-20" aria-hidden />
                 <div className="absolute left-3 top-3 inline-flex items-center rounded-full bg-saffron px-3 py-1 text-[11px] font-bold text-saffron-foreground">{p.category}</div>
               </div>
               <div className="p-6">

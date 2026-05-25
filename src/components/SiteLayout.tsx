@@ -1,5 +1,6 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { RoundCursor } from "./RoundCursor";
 import { ScrollToTop } from "./ui/ScrollToTop";
 
 export function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -9,6 +10,7 @@ export function SiteLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <Footer />
       <ScrollToTop />
+      <RoundCursor />
     </div>
   );
 }

@@ -1,9 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X, ChevronDown, ShieldCheck } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { INITIATIVES } from "@/lib/site";
 import { motion } from "framer-motion";
 import logoImg from "@/assets/netsecure-logo.webp";
+import { AnnouncementStrip } from "./AnnouncementStrip";
+import { ThemeToggle } from "./ThemeToggle";
+
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/about", label: "About" },
@@ -16,10 +19,10 @@ const navLinks = [
 export function Header() {
   const [open, setOpen] = useState(false);
   const [initOpen, setInitOpen] = useState(false);
-  const location = useLocation();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+      <AnnouncementStrip />
       <div className="container-prose flex h-16 items-center justify-between gap-4 md:h-20">
         <Link to="/" className="flex items-center transition hover:opacity-90">
           <img src={logoImg} alt="NetSecure Foundation" className="h-10 w-auto md:h-12" />
@@ -68,6 +71,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Link
             to="/donate"
             className="hidden rounded-lg bg-saffron px-5 py-2.5 text-sm font-bold text-saffron-foreground shadow-sm transition hover:brightness-110 sm:inline-flex"
@@ -88,7 +92,10 @@ export function Header() {
         <div className="fixed inset-0 z-50 bg-background lg:hidden">
           <div className="container-prose flex h-16 items-center justify-between">
             <span className="font-display font-bold">Menu</span>
-            <button onClick={() => setOpen(false)} className="grid h-10 w-10 place-items-center rounded-lg border border-border">
+            <button
+              onClick={() => setOpen(false)}
+              className="grid h-10 w-10 place-items-center rounded-lg border border-border"
+            >
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -106,7 +113,11 @@ export function Header() {
             <div className="px-3 pt-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               Initiatives
             </div>
-            <Link to="/initiatives" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2 text-base font-medium hover:bg-muted">
+            <Link
+              to="/initiatives"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-2 text-base font-medium hover:bg-muted"
+            >
               All Initiatives
             </Link>
             {INITIATIVES.map((i) => (
@@ -120,6 +131,9 @@ export function Header() {
                 {i.name}
               </Link>
             ))}
+            <div className="mt-4 px-3">
+              <ThemeToggle />
+            </div>
             <Link
               to="/donate"
               onClick={() => setOpen(false)}

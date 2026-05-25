@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, ArrowUpRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { ArrowUpRight, Calendar, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface Campaign {
@@ -13,129 +13,122 @@ interface Campaign {
   image?: string;
 }
 
+const CARD_WIDTH_REM = 25;
+const GAP_REM = 2;
+
 export function Carousel3D({ items }: { items: Campaign[] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(Math.min(1, items.length - 1));
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const focusedIndex = hoveredIndex ?? activeIndex;
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % items.length);
-  };
+  useEffect(() => {
+    if (hoveredIndex !== null) return;
 
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
-  };
+    const timer = window.setInterval(() => {
+      setActiveIndex((current) => (current + 1) % items.length);
+    }, 4500);
+
+    return () => window.clearInterval(timer);
+  }, [hoveredIndex, items.length]);
 
   return (
-    <div className="relative flex min-h-[500px] w-full flex-col items-center justify-center overflow-hidden py-10">
-      {/* 3D Coverflow Container */}
-      <div className="relative flex h-[400px] w-full max-w-5xl items-center justify-center perspective-[1000px]">
-        <AnimatePresence initial={false} mode="popLayout">
-          {items.map((item, index) => {
-            // Determine relative position
-            let offset = index - currentIndex;
-            // Handle wrap around
-            if (offset < -Math.floor(items.length / 2)) offset += items.length;
-            if (offset > Math.floor(items.length / 2)) offset -= items.length;
+    <div className="campaign-strip relative mt-10 overflow-hidden py-12">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-20 bg-gradient-to-r from-surface-alt to-transparent md:w-36" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-20 bg-gradient-to-l from-surface-alt to-transparent md:w-36" />
 
-            const isCenter = offset === 0;
-            
-            // Limit visible cards
-            if (Math.abs(offset) > 2) return null;
+      <motion.div
+        className="campaign-strip-track flex items-stretch gap-8 will-change-transform"
+        animate={{
+          x: `calc(50% - ${CARD_WIDTH_REM / 2}rem - ${
+            activeIndex * (CARD_WIDTH_REM + GAP_REM)
+          }rem)`,
+        }}
+        transition={{ type: "spring", stiffness: 90, damping: 24 }}
+      >
+        {items.map((item, index) => {
+          const distance = Math.abs(index - focusedIndex);
+          const isFocused = distance === 0;
+          const blur =
+            hoveredIndex === index ? "blur(0px)" : `blur(${Math.min(distance * 2.6, 7)}px)`;
 
-            return (
-              <motion.div
-                key={item.title}
-                layout
-                initial={{ opacity: 0, scale: 0.8, x: offset * 200, z: -Math.abs(offset) * 150 }}
-                animate={{
-                  opacity: Math.abs(offset) >= 2 ? 0 : 1,
-                  scale: isCenter ? 1 : 0.85,
-                  x: offset * 180, // Horizontal spread
-                  z: -Math.abs(offset) * 100, // Depth
-                  rotateY: offset * -15, // Slight tilt towards center
-                  filter: isCenter ? "blur(0px)" : "blur(4px)",
-                }}
-                exit={{ opacity: 0, scale: 0.8, z: -200 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className={cn(
-                  "absolute h-[350px] w-[300px] origin-center cursor-pointer rounded-2xl md:h-[400px] md:w-[350px]",
-                  isCenter ? "z-30 shadow-card-hover" : "z-10 shadow-card"
+          return (
+            <motion.article
+              key={`${item.title}-${index}`}
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              onFocus={() => setHoveredIndex(index)}
+              onBlur={() => setHoveredIndex(null)}
+              onClick={() => setActiveIndex(index)}
+              animate={{
+                scale: isFocused ? 1.06 : 0.94,
+                opacity: isFocused ? 1 : Math.max(0.42, 0.82 - distance * 0.16),
+                filter: blur,
+              }}
+              transition={{ type: "spring", stiffness: 260, damping: 28 }}
+              className={cn(
+                "group relative flex h-[27rem] w-[min(78vw,25rem)] shrink-0 flex-col overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-card transition-shadow duration-300 hover:shadow-card-hover md:w-[25rem]",
+                isFocused && "z-10 shadow-card-hover",
+              )}
+            >
+              <div className="relative h-56 overflow-hidden rounded-b-[1.4rem] bg-muted">
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
                 )}
-                onClick={() => setCurrentIndex(index)}
-              >
-                {/* Progressive Blue Background Card */}
-                <div className="h-full w-full overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-teal/40 p-1 relative border border-white/10 group">
-                  <div className="absolute inset-0 bg-primary/20 backdrop-blur-sm" />
-                  
-                  {/* Card Content Wrapper */}
-                  <div className="relative h-full w-full rounded-xl bg-card p-4 flex flex-col justify-between z-10 overflow-hidden">
-                    {item.image && (
-                      <div className="absolute inset-0 z-[-1] opacity-70 transition-opacity duration-300 group-hover:opacity-100">
-                        <img src={item.image} alt={item.title} referrerPolicy="no-referrer" className="h-full w-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-card via-card/90 to-card/20" />
-                      </div>
-                    )}
-                    <div>
-                      <div className="mb-4 inline-flex items-center rounded-full bg-teal/10 px-3 py-1 text-[11px] font-semibold text-teal backdrop-blur-md">
-                        <div className="mr-1.5 h-1.5 w-1.5 rounded-full bg-teal" />
-                        {item.initiative}
-                      </div>
-                      
-                      <h3 className="font-display text-xl font-bold text-foreground transition-colors group-hover:text-primary">
-                        {item.title}
-                      </h3>
-                      
-                      <p className="mt-3 text-sm text-muted-foreground line-clamp-3">
-                        Cyber awareness drive at {item.venue} focusing on digital safety and ethics.
-                      </p>
-                    </div>
-
-                    <div className="mt-auto">
-                      <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground mb-4">
-                        <span className="flex items-center gap-1.5">
-                          <MapPin className="h-4 w-4" /> {item.venue}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <Calendar className="h-4 w-4" /> {item.date}
-                        </span>
-                      </div>
-                      
-                      <Link 
-                        to="/initiatives/$slug"
-                        params={{ slug: item.slug || 'cyber-shiksha-abhiyan' }}
-                        className="flex w-full items-center justify-between rounded-lg bg-primary/5 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-                      >
-                        Explore Campaign
-                        <ArrowUpRight className="h-4 w-4" />
-                      </Link>
-                    </div>
-                  </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-card/20 via-transparent to-transparent" />
+                <div className="absolute left-4 top-4 rounded-full border border-white/20 bg-black/35 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
+                  {item.initiative}
                 </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-      </div>
+              </div>
 
-      {/* Navigation Controls */}
-      <div className="mt-8 flex gap-4">
-        <button
-          onClick={handlePrev}
-          className="grid h-12 w-12 place-items-center rounded-full border border-border bg-background transition-colors hover:bg-muted focus:outline-none"
-          aria-label="Previous campaign"
-        >
-          <svg className="h-5 w-5 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-        <button
-          onClick={handleNext}
-          className="grid h-12 w-12 place-items-center rounded-full border border-border bg-background transition-colors hover:bg-muted focus:outline-none"
-          aria-label="Next campaign"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="font-display text-lg font-bold leading-snug text-foreground">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  Cyber awareness drive at {item.venue} focused on practical digital safety.
+                </p>
+
+                <div className="mt-5 flex flex-wrap gap-3 text-xs font-semibold text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 text-teal" /> {item.venue}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5 text-teal" /> {item.date}
+                  </span>
+                </div>
+
+                <Link
+                  to="/initiatives/$slug"
+                  params={{ slug: item.slug || "cyber-shiksha-abhiyan" }}
+                  className="mt-auto inline-flex items-center justify-between rounded-xl border border-border bg-background/70 px-4 py-3 text-sm font-bold text-primary transition hover:border-teal hover:text-teal"
+                >
+                  Explore Campaign
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </motion.article>
+          );
+        })}
+      </motion.div>
+
+      <div className="mt-8 flex justify-center gap-2">
+        {items.map((item, index) => (
+          <button
+            key={item.title}
+            type="button"
+            onClick={() => setActiveIndex(index)}
+            className={cn(
+              "h-2 rounded-full transition-all",
+              index === activeIndex ? "w-8 bg-teal" : "w-2 bg-muted-foreground/40 hover:bg-teal/70",
+            )}
+            aria-label={`Show campaign ${index + 1}`}
+          />
+        ))}
       </div>
     </div>
   );
